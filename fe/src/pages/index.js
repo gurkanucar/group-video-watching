@@ -1,10 +1,16 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import useSocket from "@/hooks/useSocket";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import VideoComponent from "@/components/VideoComponent";
 
 export default function Home() {
   const { socket, on, emit } = useSocket("http://localhost:8000");
+
+  const inputRef = useRef();
+  const [videoUrl, setVideoUrl] = useState(
+    "https://www.youtube.com/watch?v=r4Pq5lygij8"
+  );
 
   useEffect(() => {
     on("pongg", (data) => {
@@ -27,6 +33,13 @@ export default function Home() {
           }}
         >
           send ping to socket
+        </button>
+
+        <VideoComponent url={videoUrl} />
+
+        <input ref={inputRef} />
+        <button onClick={() => setVideoUrl(inputRef.current.value)}>
+          Load Video
         </button>
       </main>
     </>
