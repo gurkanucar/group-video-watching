@@ -1,3 +1,4 @@
+import { parseUrl } from "@/util/videoUtils";
 import React, { useEffect, useState } from "react";
 import Youtube from "react-youtube";
 
@@ -38,7 +39,7 @@ const VideoComponent = (props) => {
       <h3>{`volume: ${playerState?.target?.playerInfo.volume}`}</h3>
       <h3>{`playerState: ${playerState?.target?.playerInfo.playerState}`}</h3>
       <Youtube
-        videoId={youtube_parser(url)}
+        videoId={parseUrl(url)}
         opts={opts}
         onStateChange={onStateChange}
         onPlaybackRateChange={onPlaybackRateChange}
