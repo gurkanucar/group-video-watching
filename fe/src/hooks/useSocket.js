@@ -1,38 +1,36 @@
-// useSocket.js
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import io from "socket.io-client";
 
 const useSocket = (url) => {
-  const [socket, setSocket] = useState(null);
+  const socketRef = useRef(null);
 
   useEffect(() => {
-    const newSocket = io(url);
-    setSocket(newSocket);
+    socketRef.current = io(url);
 
     return () => {
-      newSocket.disconnect();
+      socketRef.current.disconnect();
     };
-  }, [url]);
+  }, []); // Add an empty array here
 
-  const on = useCallback(
-    (event, callback) => {
-      if (socket) {
-        socket.on(event, callback);
+  const on = useCallback((eventName, callback) => {
+    if (socketRef.current) {
+      socketRef.current.on(eventName, callback);
+    }
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.off(eventName, callback);
       }
-    },
-    [socket]
-  );
+    };
+  }, []);
 
-  const emit = useCallback(
-    (event, data) => {
-      if (socket) {
-        socket.emit(event, data);
-      }
-    },
-    [socket]
-  );
+  const emit = useCallback((eventName, data) => {
+    if (socketRef.current) {
+      socketRef.current.emit(eventName, data);
+    }
+  }, []);
 
-  return { socket, on, emit };
+  return { socket: socketRef.current, on, emit };
 };
 
 export default useSocket;
