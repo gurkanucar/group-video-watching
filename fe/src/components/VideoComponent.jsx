@@ -12,22 +12,8 @@ const VideoComponent = (props) => {
     },
   };
 
-  const { url } = props;
-
-  const onSoundLevelChange = (newVolume) => {
-    console.log(`Volume changed: ${newVolume}`);
-  };
-
-  const { playerRef, seekTo, setVolume, onStateChange, playerInfo } =
-    usePlayer(onSoundLevelChange);
-
-  const [playerState, setPlayerState] = useState();
-
-  const onReady = (event) => {
-    event.target.pauseVideo();
-  };
-
-  const onPlaybackRateChange = () => {};
+  const { url, playerRef, onStateChange, onPlaybackRateChange, onReady,playerInfo } =
+    props;
 
   return (
     <div>
@@ -44,14 +30,6 @@ const VideoComponent = (props) => {
         onPlaybackRateChange={onPlaybackRateChange}
         onReady={onReady}
       />
-      <button
-        onClick={() => {
-          seekTo(1415.182735);
-          setVolume(25);
-        }}
-      >
-        update
-      </button>
     </div>
   );
 };

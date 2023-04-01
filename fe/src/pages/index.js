@@ -3,6 +3,7 @@ import styles from "@/styles/Home.module.css";
 import useSocket from "@/hooks/useSocket";
 import { useEffect, useRef, useState } from "react";
 import VideoComponent from "@/components/VideoComponent";
+import { usePlayer } from "@/hooks/usePlayer";
 
 export default function Home() {
   const { socket, on, emit } = useSocket("http://localhost:8000");
@@ -11,6 +12,19 @@ export default function Home() {
   const [videoUrl, setVideoUrl] = useState(
     "https://www.youtube.com/watch?v=r4Pq5lygij8"
   );
+
+  const onSoundLevelChange = (newVolume) => {
+    console.log(`Volume changed: ${newVolume}`);
+  };
+
+  const { playerRef, seekTo, setVolume, onStateChange, playerInfo } =
+    usePlayer(onSoundLevelChange);
+
+  const onReady = (event) => {
+    event.target.pauseVideo();
+  };
+
+  const onPlaybackRateChange = () => {};
 
   useEffect(() => {
     on("pongg", (data) => {
@@ -35,7 +49,23 @@ export default function Home() {
           send ping to socket
         </button>
 
-        <VideoComponent url={videoUrl} />
+        <VideoComponent
+          onStateChange={onStateChange}
+          onPlaybackRateChange={onPlaybackRateChange}
+          onReady={onReady}
+          playerRef={playerRef}
+          playerInfo={playerInfo}
+          url={videoUrl}
+        />
+
+        <button
+          onClick={() => {
+            seekTo(1415.182735);
+            setVolume(25);
+          }}
+        >
+          update
+        </button>
 
         <input ref={inputRef} />
         <button onClick={() => setVideoUrl(inputRef.current.value)}>
