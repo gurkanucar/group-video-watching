@@ -1,5 +1,6 @@
+import { usePlayer } from "@/hooks/usePlayer";
 import { parseUrl } from "@/util/videoUtils";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Youtube from "react-youtube";
 
 const VideoComponent = (props) => {
@@ -12,33 +13,31 @@ const VideoComponent = (props) => {
   };
 
   const { url } = props;
+
+  const onSoundLevelChange = (newVolume) => {
+    console.log(`Volume changed: ${newVolume}`);
+  };
+
+  const { playerRef, seekTo, setVolume, onStateChange, playerInfo } =
+    usePlayer(onSoundLevelChange);
+
   const [playerState, setPlayerState] = useState();
 
   const onReady = (event) => {
-    // access to player in all event handlers via event.target
-    setPlayer(event.target);
     event.target.pauseVideo();
   };
 
-  const onStateChange = (e) => {
-    setPlayerState(e);
-    console.log("onStateChange", e);
-    console.log("videoTitle", e.target.videoTitle);
-    console.log("playerInf", e.target.playerInfo);
-  };
-
-  const onPlaybackRateChange = (event) => {
-    //console.log("onPlaybackRateChange", event);
-  };
+  const onPlaybackRateChange = () => {};
 
   return (
     <div>
-      <h3>{`currentTime: ${playerState?.target?.playerInfo.currentTime}`}</h3>
-      <h3>{`playbackRate: ${playerState?.target?.playerInfo.playbackRate}`}</h3>
-      <h3>{`videoUrl: ${playerState?.target?.playerInfo.videoUrl}`}</h3>
-      <h3>{`volume: ${playerState?.target?.playerInfo.volume}`}</h3>
-      <h3>{`playerState: ${playerState?.target?.playerInfo.playerState}`}</h3>
+      <h3>{`currentTime: ${playerInfo.currentTime}`}</h3>
+      <h3>{`playbackRate: ${playerInfo.playbackRate}`}</h3>
+      <h3>{`videoUrl: ${playerInfo.videoUrl}`}</h3>
+      <h3>{`volume: ${playerInfo.volume}`}</h3>
+      <h3>{`playerState: ${playerInfo.playerState}`}</h3>
       <Youtube
+        ref={playerRef}
         videoId={parseUrl(url)}
         opts={opts}
         onStateChange={onStateChange}
@@ -47,10 +46,11 @@ const VideoComponent = (props) => {
       />
       <button
         onClick={() => {
-          player.seekTo(1415.182735);
+          seekTo(1415.182735);
+          setVolume(25);
         }}
       >
-        seek update
+        update
       </button>
     </div>
   );
