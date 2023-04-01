@@ -45,6 +45,13 @@ const VideoComponent = (props) => {
         onPlaybackRateChange={onPlaybackRateChange}
         onReady={onReady}
       />
+      <button
+        onClick={() => {
+          player.seekTo(1415.182735);
+        }}
+      >
+        seek update
+      </button>
     </div>
   );
 };
