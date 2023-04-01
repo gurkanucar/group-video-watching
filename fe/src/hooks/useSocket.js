@@ -1,17 +1,16 @@
 // useSocket.js
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import io from "socket.io-client";
 
 const useSocket = (url) => {
   const [socket, setSocket] = useState(null);
-  const socketRef = useRef(null);
 
   useEffect(() => {
-    socketRef.current = io(url);
-    setSocket(socketRef.current);
+    const newSocket = io(url);
+    setSocket(newSocket);
 
     return () => {
-      socketRef.current.disconnect();
+      newSocket.disconnect();
     };
   }, [url]);
 
