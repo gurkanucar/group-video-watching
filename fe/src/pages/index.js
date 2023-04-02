@@ -8,6 +8,7 @@ import { usePlayer } from "@/hooks/usePlayer";
 export default function Home() {
   const { socket, on, emit } = useSocket("http://localhost:8000");
 
+  const [handleFromSocket, setHandleFromSocket] = useState(false);
   const inputRef = useRef();
   const [videoUrl, setVideoUrl] = useState(
     "https://www.youtube.com/watch?v=r4Pq5lygij8"
@@ -41,7 +42,12 @@ export default function Home() {
     play,
     pause,
     playerInfo,
-  } = usePlayer(onPlayerStateChange, onSoundLevelChange, onPlaybackRateChange);
+  } = usePlayer(
+    onPlayerStateChange,
+    onSoundLevelChange,
+    onPlaybackRateChange,
+    setHandleFromSocket
+  );
 
   useEffect(() => {
     on("pongg", (data) => {
@@ -60,11 +66,13 @@ export default function Home() {
     on("handlePlayerStateChange", (data) => {
       console.log("handlePlayerStateChange socket", JSON.parse(data));
       if (JSON.parse(data).playerState == "1") {
-        play();
+        play(true);
+        setHandleFromSocket(true);
       } else if (JSON.parse(data).playerState == "2") {
-        pause();
+        pause(true);
+        setHandleFromSocket(true);
       }
-     seekTo(JSON.parse(data).seekTo);
+      seekTo(JSON.parse(data).seekTo);
     });
   }, [on]);
 

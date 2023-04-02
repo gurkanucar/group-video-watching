@@ -3,7 +3,8 @@ import { useRef, useState, useEffect } from "react";
 export const usePlayer = (
   onPlayerStateChange,
   onSoundLevelChange,
-  onPlaybackRateChange
+  onPlaybackRateChange,
+  setHandleFromSocket
 ) => {
   const playerRef = useRef();
   const [playerInfo, setPlayerInfo] = useState({});
@@ -11,7 +12,7 @@ export const usePlayer = (
   const [isSocketUpdate, setIsSocketUpdate] = useState(false);
 
   const seekTo = (time) => {
-    playerRef.current.internalPlayer.seekTo(time);
+    // playerRef.current.internalPlayer.seekTo(time);
   };
 
   const setVolume = (volume, fromSocket = false) => {
@@ -19,21 +20,19 @@ export const usePlayer = (
     playerRef.current.internalPlayer.setVolume(volume);
   };
 
-  const play = () => {
+  const play = (fromSocket = false) => {
     console.log("REF", playerRef);
     playerRef.current.internalPlayer.playVideo();
   };
 
-  const pause = () => {
+  const pause = (fromSocket = false) => {
     playerRef.current.internalPlayer.pauseVideo();
   };
 
   const onStateChange = (event) => {
     const updatedPlayerInfo = event.target.playerInfo;
     setPlayerInfo(updatedPlayerInfo);
-    if (!isSocketUpdate) {
-      onPlayerStateChange?.(updatedPlayerInfo);
-    }
+    onPlayerStateChange?.(updatedPlayerInfo);
   };
 
   const handlePlaybackRateChange = (event) => {
