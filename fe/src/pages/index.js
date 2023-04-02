@@ -13,17 +13,19 @@ export default function Home() {
     "https://www.youtube.com/watch?v=r4Pq5lygij8"
   );
 
-  const onPlayerStateChange = (updatedPlayerInfo) => {
-    console.log(updatedPlayerInfo);
-    console.log(`onPlayerStateChangeHandler: ${updatedPlayerInfo.currentTime}`);
+  const onPlayerStateChange = (playerState) => {
+    emit("playerStateChange", playerState);
+    console.log(playerState);
   };
 
   const onSoundLevelChange = (newVolume) => {
-    console.log(`Volume changed: ${newVolume}`);
+    console.log(newVolume);
+    emit("soundChange", { soundLevel: newVolume });
   };
 
   const onPlaybackRateChange = (playbackRate) => {
     console.log(`playbackRate changed: ${playbackRate}`);
+    emit("playbackRateChange", { soundLevel: newVolume });
   };
 
   const onReady = (event) => {
@@ -36,12 +38,33 @@ export default function Home() {
     setVolume,
     onStateChange,
     handlePlaybackRateChange,
+    play,
+    pause,
     playerInfo,
   } = usePlayer(onPlayerStateChange, onSoundLevelChange, onPlaybackRateChange);
 
   useEffect(() => {
     on("pongg", (data) => {
       console.log("working!", data);
+    });
+
+    on("handleSoundChange", (data) => {
+      console.log("handleSoundChange!", JSON.parse(data).soundLevel);
+      setVolume(JSON.parse(data).soundLevel, true);
+    });
+
+    on("handleRateChange", (data) => {
+      setRate(data.rate);
+    });
+
+    on("handlePlayerStateChange", (data) => {
+      console.log("handlePlayerStateChange socket", JSON.parse(data));
+      if (JSON.parse(data).playerState == "1") {
+        play();
+      } else if (JSON.parse(data).playerState == "2") {
+        pause();
+      }
+     seekTo(JSON.parse(data).seekTo);
     });
   }, [on]);
 
@@ -80,6 +103,21 @@ export default function Home() {
           update
         </button>
 
+        <button
+          onClick={() => {
+            play();
+          }}
+        >
+          play
+        </button>
+
+        <button
+          onClick={() => {
+            pause();
+          }}
+        >
+          pause
+        </button>
         <input ref={inputRef} />
         <button onClick={() => setVideoUrl(inputRef.current.value)}>
           Load Video
