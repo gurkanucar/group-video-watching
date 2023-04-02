@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const usePlayer = (socket, on, emit) => {
   const [player, setPlayer] = useState(null);
   const [lastEmittedTime, setLastEmittedTime] = useState(0);
+  const clientIdRef = useRef(null);
 
   const onPlayerStateChange = (event) => {
     const player = event.target;
@@ -14,14 +15,21 @@ const usePlayer = (socket, on, emit) => {
         setLastEmittedTime(currentTime);
         emit("seekChange", { currentTime });
       }
-      emit("playerStateChange", { playerState: "play" });
+      emit("playerStateChange", {
+        playerState: "play",
+        clientId: clientIdRef.current,
+      });
     } else if (playerState === 2) {
-      emit("playerStateChange", { playerState: "pause" });
+      emit("playerStateChange", {
+        playerState: "pause",
+        clientId: clientIdRef.current,
+      });
     }
   };
 
   useEffect(() => {
     if (socket) {
+      clientIdRef.current = socket.id;
       on("handleSeekChange", (data) => {
         const parsedData = JSON.parse(data);
         if (player && player.getIframe()) {
