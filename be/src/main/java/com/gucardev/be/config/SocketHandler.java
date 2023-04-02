@@ -93,11 +93,7 @@ public class SocketHandler {
                     .sendEvent(
                         "handleSeekChange",
                         new ObjectMapper()
-                            .writeValueAsString(
-                                Map.of(
-                                    "seekTo",
-                                    payload.get("currentTime")
-                                    )));
+                            .writeValueAsString(Map.of("seekTo", payload.get("currentTime"))));
               } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
               }
@@ -109,25 +105,15 @@ public class SocketHandler {
       throws JsonProcessingException {
     log.info("playerStateChange ,client: {}, payload: {}", client.getSessionId(), payload);
 
-    client.getNamespace().getAllClients().stream()
-        .map(x -> x.getSessionId())
-        .filter(y -> !y.equals(client.getSessionId()))
-        .collect(Collectors.toList())
-        .forEach(
-            x -> {
-              try {
-                server
-                    .getClient(x)
-                    .sendEvent(
-                        "handlePlayerStateChange",
-                        new ObjectMapper()
-                            .writeValueAsString(
-                                Map.of(
-                                    "playerState",
-                                    payload.get("playerState"))));
-              } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-              }
-            });
+    Map<String, Object> modifiedPayload = new HashMap<>();
+    modifiedPayload.put("playerState", payload.get("playerState"));
+
+    String jsonPayload = new ObjectMapper().writeValueAsString(modifiedPayload);
+
+     for (SocketIOClient otherClient : client.getNamespace().getAllClients()) {
+      if (!otherClient.getSessionId().equals(client.getSessionId())) {
+        otherClient.sendEvent("handlePlayerStateChange", jsonPayload);
+      }
+    }
   }
 }
