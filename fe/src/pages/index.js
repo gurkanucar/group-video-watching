@@ -3,6 +3,7 @@ import useSocket from "@/hooks/useSocket";
 import { useEffect, useRef, useState } from "react";
 import VideoComponent from "@/components/VideoComponent";
 import { usePlayer } from "@/hooks/usePlayer";
+import VideoComponent2 from "@/components/VideoComponent2";
 export default function Home() {
   const { socket, on, emit } = useSocket("http://localhost:8000");
 
@@ -40,14 +41,15 @@ export default function Home() {
   return (
     <>
       <main className={styles.main}>
-        <VideoComponent
+        {/* <VideoComponent
           onStateChange={onStateChange}
           onReady={onReady}
           playerRef={playerRef}
           playerInfo={playerInfo}
           url={videoUrl}
-        />
+        /> */}
 
+        <VideoComponent2 />
         <input ref={inputRef} />
         <button onClick={() => setVideoUrl(inputRef.current.value)}>
           Load Video
