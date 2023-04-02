@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -50,54 +49,21 @@ public class SocketHandler {
             .writeValueAsString(new AbstractMap.SimpleEntry<>("data", "Hello Test!")));
   }
 
-  @OnEvent("soundChange")
-  public void onSoundChange(SocketIOClient client, Map<String, Object> payload)
-      throws JsonProcessingException {
-    log.info("client: {}, arr: {}", client.getSessionId(), users);
-    double soundLevel = Double.parseDouble(String.valueOf(payload.get("soundLevel")));
-    log.info("soundChange: {} ", soundLevel);
-    client.getNamespace().getAllClients().stream()
-        .map(x -> x.getSessionId())
-        .filter(y -> !y.equals(client.getSessionId()))
-        .collect(Collectors.toList())
-        .forEach(
-            x -> {
-              try {
-                server
-                    .getClient(x)
-                    .sendEvent(
-                        "handleSoundChange",
-                        new ObjectMapper()
-                            .writeValueAsString(
-                                new AbstractMap.SimpleEntry<>("soundLevel", soundLevel)));
-              } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-              }
-            });
-  }
-
   @OnEvent("seekChange")
   public void onSeekChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
     log.info("playerStateChange ,client: {}, payload: {}", client.getSessionId(), payload);
 
-    client.getNamespace().getAllClients().stream()
-        .map(x -> x.getSessionId())
-        .filter(y -> !y.equals(client.getSessionId()))
-        .collect(Collectors.toList())
-        .forEach(
-            x -> {
-              try {
-                server
-                    .getClient(x)
-                    .sendEvent(
-                        "handleSeekChange",
-                        new ObjectMapper()
-                            .writeValueAsString(Map.of("seekTo", payload.get("currentTime"))));
-              } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-              }
-            });
+    Map<String, Object> response = new HashMap<>();
+    response.put("seekTo", payload.get("currentTime"));
+
+    String jsonPayload = new ObjectMapper().writeValueAsString(response);
+
+    for (SocketIOClient otherClient : client.getNamespace().getAllClients()) {
+      if (!otherClient.getSessionId().equals(client.getSessionId())) {
+        otherClient.sendEvent("handleSeekChange", jsonPayload);
+      }
+    }
   }
 
   @OnEvent("playerStateChange")
@@ -105,12 +71,12 @@ public class SocketHandler {
       throws JsonProcessingException {
     log.info("playerStateChange ,client: {}, payload: {}", client.getSessionId(), payload);
 
-    Map<String, Object> modifiedPayload = new HashMap<>();
-    modifiedPayload.put("playerState", payload.get("playerState"));
+    Map<String, Object> response = new HashMap<>();
+    response.put("playerState", payload.get("playerState"));
 
-    String jsonPayload = new ObjectMapper().writeValueAsString(modifiedPayload);
+    String jsonPayload = new ObjectMapper().writeValueAsString(response);
 
-     for (SocketIOClient otherClient : client.getNamespace().getAllClients()) {
+    for (SocketIOClient otherClient : client.getNamespace().getAllClients()) {
       if (!otherClient.getSessionId().equals(client.getSessionId())) {
         otherClient.sendEvent("handlePlayerStateChange", jsonPayload);
       }
