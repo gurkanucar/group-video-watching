@@ -79,7 +79,7 @@ public class SocketHandler {
   @OnEvent("playerStateChange")
   public void onPlayerStateChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
-    log.info("client: {}, arr: {}", client.getSessionId(), users);
+    log.info("playerStateChange ,client: {}, payload: {}", client.getSessionId(), payload);
 
     client.getNamespace().getAllClients().stream()
         .map(x -> x.getSessionId())
