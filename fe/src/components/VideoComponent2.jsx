@@ -90,9 +90,38 @@ const VideoComponent3 = () => {
         value={videoIdValue}
         onChange={handleVideoIdChange}
       />
-      <button onClick={handlePlayClick}>Play</button>
-      <button onClick={handlePauseClick}>Pause</button>
-
+      <div style={{ display: "flex", gap: "10px" }}>
+        <div
+          style={{
+            width: "50px",
+            height: "50px",
+            backgroundColor: "grey",
+            borderRadius: "50%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+          }}
+          onClick={handlePlayClick}
+        >
+          <span style={{ fontSize: "24px" }}>▶</span>
+        </div>
+        <div
+          style={{
+            width: "50px",
+            height: "50px",
+            backgroundColor: "grey",
+            borderRadius: "50%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+          }}
+          onClick={handlePauseClick}
+        >
+          <span style={{ fontSize: "24px" }}>||</span>
+        </div>
+      </div>
       <div
         style={{
           width: "100%",
