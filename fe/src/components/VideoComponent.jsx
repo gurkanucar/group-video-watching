@@ -12,8 +12,14 @@ const VideoComponent = (props) => {
     },
   };
 
-  const { url, playerRef, onStateChange, onPlaybackRateChange, onReady,playerInfo } =
-    props;
+  const {
+    url,
+    playerRef,
+    onStateChange,
+    onReady,
+    handlePlaybackRateChange,
+    playerInfo,
+  } = props;
 
   return (
     <div>
@@ -27,7 +33,7 @@ const VideoComponent = (props) => {
         videoId={parseUrl(url)}
         opts={opts}
         onStateChange={onStateChange}
-        onPlaybackRateChange={onPlaybackRateChange}
+        onPlaybackRateChange={handlePlaybackRateChange}
         onReady={onReady}
       />
     </div>

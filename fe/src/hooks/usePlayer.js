@@ -1,23 +1,30 @@
 import { useRef, useState, useEffect } from "react";
 
-export const usePlayer = (onSoundLevelChange) => {
-  const player = useRef();
+export const usePlayer = (
+  onPlayerStateChange,
+  onSoundLevelChange,
+  onPlaybackRateChange
+) => {
+  const playerRef = useRef();
   const [playerInfo, setPlayerInfo] = useState({});
   const [volume, setVolumeState] = useState();
-
   const seekTo = (time) => {
-    player.current.internalPlayer.seekTo(time);
+    playerRef.current.internalPlayer.seekTo(time);
   };
 
   const setVolume = (volume) => {
-    player.current.internalPlayer.setVolume(volume);
+    playerRef.current.internalPlayer.setVolume(volume);
   };
 
-  const onStateChange = (e) => {
-    setPlayerInfo(e.target.playerInfo);
-    console.log("onStateChange", e);
-    console.log("videoTitle", e.target.videoTitle);
-    console.log("playerInf", e.target.playerInfo);
+  const onStateChange = (event) => {
+    const updatedPlayerInfo = event.target.playerInfo;
+    setPlayerInfo(updatedPlayerInfo);
+    onPlayerStateChange?.(updatedPlayerInfo);
+  };
+
+  const handlePlaybackRateChange = (event) => {
+    const currentPlaybackRate = event.target.getPlaybackRate();
+    onPlaybackRateChange?.(currentPlaybackRate);
   };
 
   useEffect(() => {
@@ -27,7 +34,7 @@ export const usePlayer = (onSoundLevelChange) => {
         onSoundLevelChange?.(currentVolume);
         setVolumeState(currentVolume);
       }
-    }, 1000);
+    }, 200);
 
     return () => {
       clearInterval(checkVolumeInterval);
@@ -35,10 +42,11 @@ export const usePlayer = (onSoundLevelChange) => {
   }, [volume, onSoundLevelChange]);
 
   return {
-    playerRef: player,
+    playerRef,
     seekTo,
     setVolume,
     onStateChange,
+    handlePlaybackRateChange,
     playerInfo,
   };
 };

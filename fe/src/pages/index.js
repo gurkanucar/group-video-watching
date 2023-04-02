@@ -13,18 +13,31 @@ export default function Home() {
     "https://www.youtube.com/watch?v=r4Pq5lygij8"
   );
 
+  const onPlayerStateChange = (updatedPlayerInfo) => {
+    console.log(updatedPlayerInfo);
+    console.log(`onPlayerStateChangeHandler: ${updatedPlayerInfo.currentTime}`);
+  };
+
   const onSoundLevelChange = (newVolume) => {
     console.log(`Volume changed: ${newVolume}`);
   };
 
-  const { playerRef, seekTo, setVolume, onStateChange, playerInfo } =
-    usePlayer(onSoundLevelChange);
+  const onPlaybackRateChange = (playbackRate) => {
+    console.log(`playbackRate changed: ${playbackRate}`);
+  };
 
   const onReady = (event) => {
     event.target.pauseVideo();
   };
 
-  const onPlaybackRateChange = () => {};
+  const {
+    playerRef,
+    seekTo,
+    setVolume,
+    onStateChange,
+    handlePlaybackRateChange,
+    playerInfo,
+  } = usePlayer(onPlayerStateChange, onSoundLevelChange, onPlaybackRateChange);
 
   useEffect(() => {
     on("pongg", (data) => {
@@ -51,10 +64,10 @@ export default function Home() {
 
         <VideoComponent
           onStateChange={onStateChange}
-          onPlaybackRateChange={onPlaybackRateChange}
           onReady={onReady}
           playerRef={playerRef}
           playerInfo={playerInfo}
+          handlePlaybackRateChange={handlePlaybackRateChange}
           url={videoUrl}
         />
 
