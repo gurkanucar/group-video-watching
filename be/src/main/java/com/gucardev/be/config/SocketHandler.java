@@ -49,6 +49,24 @@ public class SocketHandler {
             .writeValueAsString(new AbstractMap.SimpleEntry<>("data", "Hello Test!")));
   }
 
+  @OnEvent("videoIdChange")
+  public void onVideoIdhange(SocketIOClient client, Map<String, Object> payload)
+      throws JsonProcessingException {
+    log.info("playerStateChange ,client: {}, payload: {}", client.getSessionId(), payload);
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("seekTo", payload.get("currentTime"));
+
+    String jsonPayload = new ObjectMapper().writeValueAsString(response);
+
+    for (SocketIOClient otherClient : client.getNamespace().getAllClients()) {
+      if (!otherClient.getSessionId().equals(client.getSessionId())) {
+        otherClient.sendEvent("handleVideoIdChange", jsonPayload);
+      }
+    }
+  }
+
+
   @OnEvent("seekChange")
   public void onSeekChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
