@@ -10,18 +10,21 @@ const VideoComponent3 = () => {
   const { socket, on, emit } = useSocket("http://localhost:8000"); // Replace "your-websocket-url" with your WebSocket URL
 
   useEffect(() => {
-    on("handlePlayerStateChange", (data) => {
-      const parsedData = JSON.parse(data);
-      console.log("handlePlayerStateChange", parsedData);
-      setIsSeekFromSocket(true);
-      if (player && player.getIframe()) {
-        player.seekTo(parsedData.seekTo, true);
-      }
-      setIsSeekFromSocket(false);
-    });
-
+    if (socket) {
+      on("handlePlayerStateChange", (data) => {
+        const parsedData = JSON.parse(data);
+        console.log("handlePlayerStateChange", parsedData);
+        setIsSeekFromSocket(true);
+        if (player && player.getIframe()) {
+          player.seekTo(parsedData.seekTo, true);
+        }
+        setIsSeekFromSocket(false);
+      });
+    }
     return () => {
-      socket.off("playerStateChange");
+      if (socket) {
+        socket.off("playerStateChange");
+      }
     };
   }, [socket, player, on]);
 
