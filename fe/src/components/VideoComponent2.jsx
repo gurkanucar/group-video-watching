@@ -6,14 +6,15 @@ const VideoComponent3 = () => {
   const [player, setPlayer] = useState(null);
   const [videoIdValue, setVideoIdValue] = useState("r4Pq5lygij8");
   const [isSeekFromSocket, setIsSeekFromSocket] = useState(false);
+  const [lastEmittedTime, setLastEmittedTime] = useState(0);
 
-  const { socket, on, emit } = useSocket("http://localhost:8000"); // Replace "your-websocket-url" with your WebSocket URL
+  const { socket, on, emit } = useSocket("http://localhost:8000");
 
   useEffect(() => {
     if (socket) {
-      on("handlePlayerStateChange", (data) => {
+      on("handleSeekChange", (data) => {
         const parsedData = JSON.parse(data);
-        console.log("handlePlayerStateChange", parsedData);
+        console.log("handleSeekChange", parsedData);
         setIsSeekFromSocket(true);
         if (player && player.getIframe()) {
           player.seekTo(parsedData.seekTo, true);
@@ -23,7 +24,7 @@ const VideoComponent3 = () => {
     }
     return () => {
       if (socket) {
-        socket.off("playerStateChange");
+        socket.off("seekChange");
       }
     };
   }, [socket, player, on]);
@@ -37,11 +38,13 @@ const VideoComponent3 = () => {
   const onPlayerStateChange = (event) => {
     const player = event.target;
     if (player.getPlayerState() === 1 && !isSeekFromSocket) {
-      // 1 = Playing
-      emit("playerStateChange", {
-        playerState: "",
-        currentTime: player.getCurrentTime(),
-      });
+      const currentTime = player.getCurrentTime();
+      if (Math.abs(currentTime - lastEmittedTime) >= 1) {
+        setLastEmittedTime(currentTime);
+        emit("seekChange", {
+          currentTime: currentTime,
+        });
+      }
     }
   };
 

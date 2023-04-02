@@ -76,6 +76,34 @@ public class SocketHandler {
             });
   }
 
+  @OnEvent("seekChange")
+  public void onSeekChange(SocketIOClient client, Map<String, Object> payload)
+      throws JsonProcessingException {
+    log.info("playerStateChange ,client: {}, payload: {}", client.getSessionId(), payload);
+
+    client.getNamespace().getAllClients().stream()
+        .map(x -> x.getSessionId())
+        .filter(y -> !y.equals(client.getSessionId()))
+        .collect(Collectors.toList())
+        .forEach(
+            x -> {
+              try {
+                server
+                    .getClient(x)
+                    .sendEvent(
+                        "handleSeekChange",
+                        new ObjectMapper()
+                            .writeValueAsString(
+                                Map.of(
+                                    "seekTo",
+                                    payload.get("currentTime")
+                                    )));
+              } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+              }
+            });
+  }
+
   @OnEvent("playerStateChange")
   public void onPlayerStateChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
@@ -95,8 +123,6 @@ public class SocketHandler {
                         new ObjectMapper()
                             .writeValueAsString(
                                 Map.of(
-                                    "seekTo",
-                                    payload.get("currentTime"),
                                     "playerState",
                                     payload.get("playerState"))));
               } catch (JsonProcessingException e) {
