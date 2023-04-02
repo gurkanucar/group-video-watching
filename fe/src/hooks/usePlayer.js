@@ -1,34 +1,38 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-export const usePlayer = (onPlayerStateChange) => {
-  const playerRef = useRef();
-  const [playerInfo, setPlayerInfo] = useState({});
+const usePlayer = (socket, on, emit) => {
+  const [player, setPlayer] = useState(null);
+  const [lastEmittedTime, setLastEmittedTime] = useState(0);
 
-  const seekTo = (time) => {
-    playerRef.current.internalPlayer.seekTo(time);
-  };
+  useEffect(() => {
+    if (socket) {
+      on("handleSeekChange", (data) => {
+        const parsedData = JSON.parse(data);
+        if (player && player.getIframe()) {
+          player.seekTo(parsedData.seekTo, true);
+        }
+      });
 
-  const play = () => {
-    console.log("REF", playerRef);
-    playerRef.current.internalPlayer.playVideo();
-  };
+      on("handlePlayerStateChange", (data) => {
+        const parsedData = JSON.parse(data);
+        if (player && player.getIframe()) {
+          if (parsedData.playerState === "play") {
+            player.playVideo();
+          } else if (parsedData.playerState === "pause") {
+            player.pauseVideo();
+          }
+        }
+      });
+    }
+    return () => {
+      if (socket) {
+        socket.off("seekChange");
+        socket.off("handlePlayerStateChange");
+      }
+    };
+  }, [socket, player, on]);
 
-  const pause = () => {
-    playerRef.current.internalPlayer.pauseVideo();
-  };
-
-  const onStateChange = (event) => {
-    const updatedPlayerInfo = { ...event.target.playerInfo };
-    setPlayerInfo(updatedPlayerInfo);
-    onPlayerStateChange?.(updatedPlayerInfo);
-  };
-
-  return {
-    playerRef,
-    seekTo,
-    play,
-    pause,
-    onStateChange,
-    playerInfo,
-  };
+  return { player, setPlayer, lastEmittedTime, setLastEmittedTime };
 };
+
+export default usePlayer;
