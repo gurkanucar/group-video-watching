@@ -27,10 +27,11 @@ const VideoComponent3 = () => {
 
   const onPlayerStateChange = (event) => {
     const player = event.target;
-    if (player.getPlayerState() === 1) { // 1 = Playing
+    if (player.getPlayerState() === 1) {
+      // 1 = Playing
       const fraction = (player.getCurrentTime() / player.getDuration()) * 100;
       setSliderValue(fraction);
-      console.log(fraction)
+      console.log(fraction);
     }
   };
 
@@ -91,17 +92,43 @@ const VideoComponent3 = () => {
       />
       <button onClick={handlePlayClick}>Play</button>
       <button onClick={handlePauseClick}>Pause</button>
-      <div style={{ width: "100%", height: "10px", backgroundColor: "grey" }}>
-        <div style={{ width: `${sliderValue}%`, height: "100%", backgroundColor: "red" }}></div>
+
+      <div
+        style={{
+          width: "100%",
+          height: "10px",
+          backgroundColor: "grey",
+          position: "relative",
+        }}
+      >
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={sliderValue}
+          onChange={handleSliderChange}
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: "100%",
+            height: "100%",
+            opacity: 0,
+            zIndex: 1,
+            cursor: "pointer",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: `${sliderValue}%`,
+            height: "100%",
+            backgroundColor: "red",
+          }}
+        ></div>
       </div>
-      <input
-        id="slider"
-        type="range"
-        min="0"
-        max="100"
-        value={sliderValue}
-        onChange={handleSliderChange}
-      />
     </div>
   );
 };
