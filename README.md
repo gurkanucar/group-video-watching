@@ -14,15 +14,22 @@
 
 &#x2610; chat
 
+## How to run?
+
+run this docker command:
+
+```bash
+docker compose up --build -d
+```
 
 
 ## Examples
 
-![/images/example1.png](./images/example1.png)
+![/res/example1.png](./res/example1.png)
 
 Example log of pause event:
 
-```
+```bash
 2023-04-03 15:44:32.111  INFO 23924 --- [tLoopGroup-3-23] com.gucardev.be.config.SocketHandler     : playerStateChange ,client: c95c42e4-318c-4368-a384-a7270dba559f, payload: {playerState=pause}
 
 2023-04-03 15:44:32.111  INFO 23924 --- [tLoopGroup-3-23] com.gucardev.be.config.SocketHandler     : sent to 44342784-855a-4ab9-876d-d5c0a8885d44 
