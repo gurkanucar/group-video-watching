@@ -10,6 +10,8 @@
 
 &#x2610; video url change
 
+&#x2610; sync with clients when joined to room 
+
 &#x2610; Join room function 
 
 &#x2610; chat
