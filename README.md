@@ -18,7 +18,19 @@
 
 ## How to run?
 
-run this docker command:
+**First learn your local ip address on network:**
+
+write your local ip address of your computer/host like `192.168.0.3`  to **.env file**
+
+```bash
+BACKEND_URL=http://<CHANGE_HERE>
+BACKEND_PORT=8080
+SOCKET_PORT=8000
+```
+
+
+
+**run this docker command:**
 
 ```bash
 docker compose up --build -d
