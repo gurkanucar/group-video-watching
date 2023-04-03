@@ -49,55 +49,31 @@ public class SocketHandler {
             .writeValueAsString(new AbstractMap.SimpleEntry<>("data", "Hello Test!")));
   }
 
-  @OnEvent("videoIdChange")
-  public void onVideoIdhange(SocketIOClient client, Map<String, Object> payload)
-      throws JsonProcessingException {
-    log.info("playerStateChange ,client: {}, payload: {}", client.getSessionId(), payload);
-
-    Map<String, Object> response = new HashMap<>();
-    response.put("seekTo", payload.get("currentTime"));
-
-    String jsonPayload = new ObjectMapper().writeValueAsString(response);
-
-    for (SocketIOClient otherClient : client.getNamespace().getAllClients()) {
-      if (!otherClient.getSessionId().equals(client.getSessionId())) {
-        otherClient.sendEvent("handleVideoIdChange", jsonPayload);
-      }
-    }
-  }
-
-
   @OnEvent("seekChange")
   public void onSeekChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
     log.info("playerStateChange ,client: {}, payload: {}", client.getSessionId(), payload);
-
     Map<String, Object> response = new HashMap<>();
     response.put("seekTo", payload.get("currentTime"));
-
     String jsonPayload = new ObjectMapper().writeValueAsString(response);
-
-    for (SocketIOClient otherClient : client.getNamespace().getAllClients()) {
-      if (!otherClient.getSessionId().equals(client.getSessionId())) {
-        otherClient.sendEvent("handleSeekChange", jsonPayload);
-      }
-    }
+    broadcastEvent(client, jsonPayload, "handleSeekChange");
   }
 
   @OnEvent("playerStateChange")
   public void onPlayerStateChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
     log.info("playerStateChange ,client: {}, payload: {}", client.getSessionId(), payload);
-
     Map<String, Object> response = new HashMap<>();
     response.put("playerState", payload.get("playerState"));
-
     String jsonPayload = new ObjectMapper().writeValueAsString(response);
+    broadcastEvent(client, jsonPayload, "handlePlayerStateChange");
+  }
 
+  private static void broadcastEvent(SocketIOClient client, String jsonPayload, String eventName) {
     for (SocketIOClient otherClient : client.getNamespace().getAllClients()) {
       if (!otherClient.getSessionId().equals(client.getSessionId())) {
         log.info("sent to {} ", otherClient.getSessionId());
-        otherClient.sendEvent("handlePlayerStateChange", jsonPayload);
+        otherClient.sendEvent(eventName, jsonPayload);
       }
     }
   }
