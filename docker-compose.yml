@@ -11,8 +11,7 @@ services:
     networks:
       - shared-net
     ports:
-      - '8080:8080'  
-      - '8000:8000'  
+      - '8000:8000'
 
   fe:
     build:
@@ -22,14 +21,14 @@ services:
       - ./fe:/app
     command: npm run dev
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       NODE_ENV: development
-      API_URL: http://host.docker.internal:8000
+      BACKEND_URL: ${BACKEND_URL}
+      BACKEND_PORT: ${BACKEND_PORT}
+      SOCKET_PORT: ${SOCKET_PORT}
     networks:
       - shared-net
-
-
 
 networks:
   shared-net:

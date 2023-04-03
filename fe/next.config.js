@@ -2,7 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   env: {
-    API_URL: process.env.API_URL,
+    BACKEND_URL: process.env.BACKEND_URL,
+    BACKEND_PORT: process.env.BACKEND_PORT,
+    SOCKET_PORT: process.env.SOCKET_PORT,
   },
 };
 
