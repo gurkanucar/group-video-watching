@@ -8,6 +8,11 @@ services:
     container_name: be
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - shared-net
+    ports:
+      - '8080:8080'  
+      - '8000:8000'  
 
   fe:
     build:
@@ -20,3 +25,12 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: development
+      API_URL: http://host.docker.internal:8000
+    networks:
+      - shared-net
+
+
+
+networks:
+  shared-net:
+    driver: bridge
