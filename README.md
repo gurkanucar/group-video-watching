@@ -36,8 +36,17 @@ SOCKET_PORT=8000
 docker compose up --build -d
 ```
 
+**Congrats! You can access to project by following address**
+
+```bash
+http://<YOUR_IP>:3000
+```
+
+
+![/res/containers.png](./res/containers.png)
 
 ## Examples
+
 
 ![/res/example1.png](./res/example1.png)
 
