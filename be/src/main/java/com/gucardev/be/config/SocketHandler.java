@@ -96,6 +96,7 @@ public class SocketHandler {
 
     for (SocketIOClient otherClient : client.getNamespace().getAllClients()) {
       if (!otherClient.getSessionId().equals(client.getSessionId())) {
+        log.info("sent to {} ", otherClient.getSessionId());
         otherClient.sendEvent("handlePlayerStateChange", jsonPayload);
       }
     }

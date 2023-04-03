@@ -1,11 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 const usePlayer = (socket, on, emit) => {
   const [player, setPlayer] = useState(null);
   const [lastEmittedTime, setLastEmittedTime] = useState(0);
-  const clientIdRef = useRef(null);
+  const [isExternalChange, setIsExternalChange] = useState(false);
 
   const onPlayerStateChange = (event) => {
+    if (isExternalChange) {
+      setIsExternalChange(false);
+      return;
+    }
     const player = event.target;
     const playerState = player.getPlayerState();
 
@@ -15,21 +19,14 @@ const usePlayer = (socket, on, emit) => {
         setLastEmittedTime(currentTime);
         emit("seekChange", { currentTime });
       }
-      emit("playerStateChange", {
-        playerState: "play",
-        clientId: clientIdRef.current,
-      });
+      emit("playerStateChange", { playerState: "play" });
     } else if (playerState === 2) {
-      emit("playerStateChange", {
-        playerState: "pause",
-        clientId: clientIdRef.current,
-      });
+      emit("playerStateChange", { playerState: "pause" });
     }
   };
 
   useEffect(() => {
     if (socket) {
-      clientIdRef.current = socket.id;
       on("handleSeekChange", (data) => {
         const parsedData = JSON.parse(data);
         if (player && player.getIframe()) {
@@ -40,11 +37,15 @@ const usePlayer = (socket, on, emit) => {
       on("handlePlayerStateChange", (data) => {
         const parsedData = JSON.parse(data);
         if (player && player.getIframe()) {
+          setIsExternalChange(true);
           if (parsedData.playerState === "play") {
             player.playVideo();
           } else if (parsedData.playerState === "pause") {
             player.pauseVideo();
           }
+          setTimeout(() => {
+            setIsExternalChange(false);
+          }, 200);
         }
       });
     }
