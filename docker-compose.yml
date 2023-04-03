@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  be:
+    build:
+      context: ./be
+      dockerfile: Dockerfile
+    container_name: be
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+
+  fe:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    volumes:
+      - ./fe:/app
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
