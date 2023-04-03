@@ -5,7 +5,7 @@ import usePlayer from "@/hooks/usePlayer";
 
 const VideoComponent = () => {
   const [videoIdValue, setVideoIdValue] = useState("r4Pq5lygij8");
-  const { socket, on, emit } = useSocket("http://192.168.0.28:8000");
+  const { socket, on, emit } = useSocket("http://be:8000");
   const { player, setPlayer, onPlayerStateChange } = usePlayer(
     socket,
     on,
