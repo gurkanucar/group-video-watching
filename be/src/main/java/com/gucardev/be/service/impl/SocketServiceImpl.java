@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+/** The type Socket service. */
 @Service
 @Slf4j
 public class SocketServiceImpl implements SocketService {
@@ -17,6 +18,11 @@ public class SocketServiceImpl implements SocketService {
   private final SocketIOServer server;
   private static final Map<String, String> users = new HashMap<>();
 
+  /**
+   * Instantiates a new Socket service.
+   *
+   * @param server the server
+   */
   public SocketServiceImpl(SocketIOServer server) {
     this.server = server;
   }
