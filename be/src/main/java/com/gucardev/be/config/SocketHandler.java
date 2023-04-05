@@ -8,7 +8,6 @@ import com.corundumstudio.socketio.annotation.OnEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gucardev.be.service.SocketService;
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -20,76 +19,47 @@ public class SocketHandler {
 
   private final SocketIOServer server;
   private static final Map<String, String> users = new HashMap<>();
-  private final SocketService service;
+  private final SocketService socketService;
 
-  public SocketHandler(SocketIOServer server, SocketService service) {
+  public SocketHandler(SocketIOServer server, SocketService socketService) {
     this.server = server;
-    this.service = service;
+    this.socketService = socketService;
     server.addListeners(this);
     server.start();
   }
 
   @OnConnect
   public void onConnect(SocketIOClient client) {
-    String clientId = client.getSessionId().toString();
-    log.info("Client connected: {}", clientId);
-    users.put(clientId, null);
+    socketService.onConnect(client);
   }
 
   @OnDisconnect
   public void onDisconnect(SocketIOClient client) {
-    String clientId = client.getSessionId().toString();
-    log.info("Client disconnected: {} ", clientId);
+    socketService.onDisconnect(client);
   }
 
   @OnEvent("pingg")
   public void onPing(SocketIOClient client) throws JsonProcessingException {
     String clientId = client.getSessionId().toString();
     log.info("ping came from: {} ", clientId);
-    client.sendEvent(
-        "pongg",
-        new ObjectMapper()
-            .writeValueAsString(new AbstractMap.SimpleEntry<>("data", "Hello Test!")));
+    client.sendEvent("pongg", new ObjectMapper().writeValueAsString(Map.of("data", "Hello Test!")));
   }
 
   @OnEvent("videoIdChange")
   public void onVideoIdChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
-    log.info("videoIdChange ,client: {}, payload: {}", client.getSessionId(), payload);
-    Map<String, Object> response = new HashMap<>();
-    response.put("videoIdChange", payload.get("videoId"));
-    String jsonPayload = new ObjectMapper().writeValueAsString(response);
-
-    broadcastEvent(client, jsonPayload, "handleVideoIdChange");
+    socketService.onVideoIdChange(client, payload);
   }
-
 
   @OnEvent("seekChange")
   public void onSeekChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
-    log.info("playerStateChange ,client: {}, payload: {}", client.getSessionId(), payload);
-    Map<String, Object> response = new HashMap<>();
-    response.put("seekTo", payload.get("currentTime"));
-    String jsonPayload = new ObjectMapper().writeValueAsString(response);
-    broadcastEvent(client, jsonPayload, "handleSeekChange");
+    socketService.onSeekChange(client, payload);
   }
 
   @OnEvent("playerStateChange")
   public void onPlayerStateChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
-    log.info("playerStateChange ,client: {}, payload: {}", client.getSessionId(), payload);
-    Map<String, Object> response = new HashMap<>();
-    response.put("playerState", payload.get("playerState"));
-    String jsonPayload = new ObjectMapper().writeValueAsString(response);
-    broadcastEvent(client, jsonPayload, "handlePlayerStateChange");
-  }
-
-  private static void broadcastEvent(SocketIOClient client, String jsonPayload, String eventName) {
-    for (SocketIOClient otherClient : client.getNamespace().getAllClients()) {
-      if (!otherClient.getSessionId().equals(client.getSessionId())) {
-        log.info("sent to {} ", otherClient.getSessionId());
-        otherClient.sendEvent(eventName, jsonPayload);
-      }
-    }
+    socketService.onPlayerStateChange(client, payload);
   }
 }
