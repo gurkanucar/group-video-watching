@@ -7,6 +7,7 @@ import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gucardev.be.service.SocketService;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,9 +20,11 @@ public class SocketHandler {
 
   private final SocketIOServer server;
   private static final Map<String, String> users = new HashMap<>();
+  private final SocketService service;
 
-  public SocketHandler(SocketIOServer server) {
+  public SocketHandler(SocketIOServer server, SocketService service) {
     this.server = server;
+    this.service = service;
     server.addListeners(this);
     server.start();
   }
