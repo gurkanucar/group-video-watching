@@ -6,7 +6,7 @@
 
 &#x2611; video seeking
 
-&#x2610; video playback rate change
+&#x2611; video playback rate change
 
 &#x2610; video url change
 
