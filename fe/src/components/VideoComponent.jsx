@@ -26,7 +26,6 @@ const VideoComponent = (props) => {
     playerVars: {
       autoplay: 0,
       rel: 0,
-      modestbranding: 1,
       showInfo: 0,
     },
   };
