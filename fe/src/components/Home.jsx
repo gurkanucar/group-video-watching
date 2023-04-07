@@ -12,7 +12,7 @@ export default function Home({ username, room }) {
 
   const { socket, on, emit, joinRoom, leaveRoom } = useSocket(
     `${process.env.BACKEND_URL}:${process.env.SOCKET_PORT}`,
-    // "http://localhost:8000",
+   //  "http://localhost:8000",
     username,
     room
   );

@@ -9,11 +9,13 @@ const Landing = () => {
   const router = useRouter();
 
   const handleJoin = () => {
-    const username = usernameRef.current.value;
-    const roomName = roomNameRef.current.value;
+    const username = encodeURIComponent(usernameRef.current.value);
+    const roomName = encodeURIComponent(roomNameRef.current.value);
 
     if (username && roomName) {
-      router.push(`/room?username=${username}&room=${roomName}`);
+      const encodedRoomName = btoa(`${username}|${roomName}`);
+      console.log(encodedRoomName)
+      router.push(`/room?value=${encodedRoomName}`);
     }
   };
 
