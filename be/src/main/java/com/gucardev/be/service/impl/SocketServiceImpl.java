@@ -68,10 +68,22 @@ public class SocketServiceImpl implements SocketService {
 
     log.info("videoIdChange ,client: {}, payload: {}", client.getSessionId(), payload);
     Map<String, Object> response = new HashMap<>();
-    response.put("videoIdChange", payload.get("videoId"));
+    response.put("videoId", payload.get("videoId"));
     String jsonPayload = new ObjectMapper().writeValueAsString(response);
 
     broadcastEvent(client, jsonPayload, "handleVideoIdChange");
+  }
+
+  @Override
+  public void onPlaybackRateChange(SocketIOClient client, Map<String, Object> payload)
+      throws JsonProcessingException {
+
+    log.info("onPlaybackRateChange ,client: {}, payload: {}", client.getSessionId(), payload);
+    Map<String, Object> response = new HashMap<>();
+    response.put("playbackRate", payload.get("playbackRate"));
+    String jsonPayload = new ObjectMapper().writeValueAsString(response);
+
+    broadcastEvent(client, jsonPayload, "handlePlaybackRateChange");
   }
 
   @Override

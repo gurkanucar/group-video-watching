@@ -106,4 +106,11 @@ public class SocketHandler {
       throws JsonProcessingException {
     socketService.onPlayerStateChange(client, payload);
   }
+
+
+  @OnEvent("onPlaybackRateChange")
+  public void onPlaybackRateChange(SocketIOClient client, Map<String, Object> payload)
+      throws JsonProcessingException {
+    socketService.onPlaybackRateChange(client, payload);
+  }
 }
