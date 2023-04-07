@@ -1,7 +1,5 @@
 # Websocket Youtube Video Together Watching Project
 
-## ! Project is still under the development process. Some features will be implement later.
-
 &#x2611; video play/pause
 
 &#x2611; video seeking
@@ -14,7 +12,6 @@
 
 &#x2610; sync with clients when joined to room 
 
-&#x2610; chat
 
 ## How to run?
 
@@ -27,7 +24,6 @@ BACKEND_URL=http://<CHANGE_HERE>
 BACKEND_PORT=8080
 SOCKET_PORT=8000
 ```
-
 
 
 **run this docker command:**
