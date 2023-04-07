@@ -11,6 +11,7 @@ const usePlayer = (socket, on, emit) => {
       return;
     }
     const player = event.target;
+    console.log("myplayer", player);
     const playerState = player.getPlayerState();
 
     if (playerState === 1) {
@@ -25,6 +26,17 @@ const usePlayer = (socket, on, emit) => {
     }
   };
 
+  const onPlaybackRateChange = (event) => {
+    if (isExternalChange) {
+      setIsExternalChange(false);
+      return;
+    }
+    const player = event.target;
+    console.log("playbackRate", player.getPlaybackRate());
+    const playbackRate = player.getPlaybackRate();
+    emit("onPlaybackRateChange", { playbackRate: playbackRate });
+  };
+
   useEffect(() => {
     if (socket) {
       on("handleSeekChange", (data) => {
@@ -33,7 +45,13 @@ const usePlayer = (socket, on, emit) => {
           player.seekTo(parsedData.seekTo, true);
         }
       });
-
+      on("handlePlaybackRateChange", (data) => {
+        const parsedData = JSON.parse(data);
+        console.log("handlePlaybackRateChange", parsedData.playbackRate);
+        if (player && player.getIframe()) {
+          player.setPlaybackRate(parsedData.playbackRate);
+        }
+      });
       on("handlePlayerStateChange", (data) => {
         const parsedData = JSON.parse(data);
         if (player && player.getIframe()) {
@@ -63,6 +81,7 @@ const usePlayer = (socket, on, emit) => {
     lastEmittedTime,
     setLastEmittedTime,
     onPlayerStateChange,
+    onPlaybackRateChange,
   };
 };
 

@@ -10,7 +10,7 @@ const useSocket = (url) => {
     return () => {
       socketRef.current.disconnect();
     };
-  }, []); // Add an empty array here
+  }, []);
 
   const on = useCallback((eventName, callback) => {
     if (socketRef.current) {

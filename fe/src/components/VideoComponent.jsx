@@ -5,12 +5,10 @@ import usePlayer from "@/hooks/usePlayer";
 
 const VideoComponent = () => {
   const [videoIdValue, setVideoIdValue] = useState("r4Pq5lygij8");
-  const { socket, on, emit } = useSocket(`${process.env.BACKEND_URL}:${process.env.SOCKET_PORT}`);
-  const { player, setPlayer, onPlayerStateChange } = usePlayer(
-    socket,
-    on,
-    emit
-  );
+  const { socket, on, emit } = useSocket();
+  `${process.env.BACKEND_URL}:${process.env.SOCKET_PORT}`;
+  const { player, setPlayer, onPlayerStateChange, onPlaybackRateChange } =
+    usePlayer(socket, on, emit);
 
   const onPlayerReady = (event) => {
     const player = event.target;
@@ -39,6 +37,7 @@ const VideoComponent = () => {
         videoId={videoIdValue}
         opts={options}
         onReady={onPlayerReady}
+        onPlaybackRateChange={onPlaybackRateChange}
         onStateChange={onPlayerStateChange}
       />
       <input
