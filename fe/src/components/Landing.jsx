@@ -9,12 +9,12 @@ const Landing = () => {
   const router = useRouter();
 
   const handleJoin = () => {
-    const username = encodeURIComponent(usernameRef.current.value);
+    const username = ""; //encodeURIComponent(usernameRef.current.value);
     const roomName = encodeURIComponent(roomNameRef.current.value);
 
-    if (username && roomName) {
+    if (roomName) {
       const encodedRoomName = btoa(`${username}|${roomName}`);
-      console.log(encodedRoomName)
+      console.log(encodedRoomName);
       router.push(`/room?value=${encodedRoomName}`);
     }
   };
@@ -22,12 +22,12 @@ const Landing = () => {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Join a Room</h1>
-      <input
+      {/* <input
         ref={usernameRef}
         type="text"
         placeholder="Username"
         className={styles.input}
-      />
+      /> */}
       <input
         ref={roomNameRef}
         type="text"
