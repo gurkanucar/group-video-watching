@@ -1,11 +1,15 @@
 import { useEffect, useRef, useCallback } from "react";
 import io from "socket.io-client";
 
-const useSocket = (url) => {
+const useSocket = (url, username, room) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
     socketRef.current = io(url);
+
+    socketRef.current.on("connect", () => {
+      socketRef.current.emit("joinRoom", { username, room });
+    });
 
     return () => {
       socketRef.current.disconnect();

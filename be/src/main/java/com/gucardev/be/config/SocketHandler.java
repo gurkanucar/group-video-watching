@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 public class SocketHandler {
 
   private final SocketIOServer server;
-  private static final Map<String, String> users = new HashMap<>();
   private final SocketService socketService;
 
   /**
@@ -68,6 +67,12 @@ public class SocketHandler {
     client.sendEvent("pongg", new ObjectMapper().writeValueAsString(Map.of("data", "Hello Test!")));
   }
 
+  @OnEvent("joinRoom")
+  public void joinRoom(SocketIOClient client, Map<String, Object> payload)
+      throws JsonProcessingException {
+   socketService.joinRoom(client,payload);
+  }
+
   /**
    * On video id change.
    *
@@ -106,7 +111,6 @@ public class SocketHandler {
       throws JsonProcessingException {
     socketService.onPlayerStateChange(client, payload);
   }
-
 
   @OnEvent("onPlaybackRateChange")
   public void onPlaybackRateChange(SocketIOClient client, Map<String, Object> payload)

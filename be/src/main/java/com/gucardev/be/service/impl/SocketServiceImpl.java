@@ -87,9 +87,34 @@ public class SocketServiceImpl implements SocketService {
   }
 
   @Override
-  public void broadcastEvent(SocketIOClient client, String jsonPayload, String eventName) {
+  public void joinRoom(SocketIOClient client, Map<String, Object> payload) {
+    String room = String.valueOf(payload.get("room"));
+    String clientId = client.getSessionId().toString();
+    client.joinRoom(room);
+    users.put(clientId, room);
+  }
+
+  public void broadcastEventToAll(SocketIOClient client, String jsonPayload, String eventName) {
 
     for (SocketIOClient otherClient : client.getNamespace().getAllClients()) {
+      if (!otherClient.getSessionId().equals(client.getSessionId())) {
+        log.info("sent to {} ", otherClient.getSessionId());
+        otherClient.sendEvent(eventName, jsonPayload);
+      }
+    }
+  }
+
+  // by room
+  public void broadcastEvent(SocketIOClient client, String jsonPayload, String eventName) {
+    String clientId = client.getSessionId().toString();
+    String room = users.get(clientId);
+
+    if (room == null) {
+      log.warn("Client {} is not in any room.", clientId);
+      return;
+    }
+
+    for (SocketIOClient otherClient : client.getNamespace().getRoomOperations(room).getClients()) {
       if (!otherClient.getSessionId().equals(client.getSessionId())) {
         log.info("sent to {} ", otherClient.getSessionId());
         otherClient.sendEvent(eventName, jsonPayload);
