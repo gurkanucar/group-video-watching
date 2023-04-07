@@ -67,12 +67,26 @@ public class SocketHandler {
     client.sendEvent("pongg", new ObjectMapper().writeValueAsString(Map.of("data", "Hello Test!")));
   }
 
+  /**
+   * Join room.
+   *
+   * @param client the client
+   * @param payload the payload
+   * @throws JsonProcessingException the json processing exception
+   */
   @OnEvent("joinRoom")
   public void joinRoom(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
    socketService.joinRoom(client,payload);
   }
 
+  /**
+   * Leave room.
+   *
+   * @param client the client
+   * @param payload the payload
+   * @throws JsonProcessingException the json processing exception
+   */
   @OnEvent("leaveRoom")
   public void leaveRoom(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
@@ -118,6 +132,13 @@ public class SocketHandler {
     socketService.onPlayerStateChange(client, payload);
   }
 
+  /**
+   * On playback rate change.
+   *
+   * @param client the client
+   * @param payload the payload
+   * @throws JsonProcessingException the json processing exception
+   */
   @OnEvent("onPlaybackRateChange")
   public void onPlaybackRateChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {

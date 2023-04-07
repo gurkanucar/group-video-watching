@@ -70,12 +70,20 @@ public interface SocketService {
   void onPlaybackRateChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException;
 
+  /**
+   * Join room.
+   *
+   * @param client the client
+   * @param payload the payload
+   */
   void joinRoom(SocketIOClient client, Map<String, Object> payload);
 
+  /**
+   * Leave room.
+   *
+   * @param client the client
+   * @param payload the payload
+   */
   void leaveRoom(SocketIOClient client, Map<String, Object> payload);
 
-
-//  void putUser(String clientId, String room);
-//
-//  Map<String, String> removeUser(String clientId, String room);
 }

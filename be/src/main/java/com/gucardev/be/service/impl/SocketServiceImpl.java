@@ -104,6 +104,13 @@ public class SocketServiceImpl implements SocketService {
     log.info("leave room: {}",room);
   }
 
+  /**
+   * Broadcast event to all.
+   *
+   * @param client the client
+   * @param jsonPayload the json payload
+   * @param eventName the event name
+   */
   public void broadcastEventToAll(SocketIOClient client, String jsonPayload, String eventName) {
 
     for (SocketIOClient otherClient : client.getNamespace().getAllClients()) {
@@ -114,7 +121,7 @@ public class SocketServiceImpl implements SocketService {
     }
   }
 
-  // by room
+  // broadcast by room
   public void broadcastEvent(SocketIOClient client, String jsonPayload, String eventName) {
     String clientId = client.getSessionId().toString();
     String room = users.get(clientId);
