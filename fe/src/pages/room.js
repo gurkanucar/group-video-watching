@@ -1,9 +1,11 @@
 import Home from "@/components/Home";
 import { useRouter } from "next/router";
 
-export default function Room() {
+const Room = () => {
   const router = useRouter();
-  const { username, room } = router.query;
+  const { room, username } = router.query;
 
-  return <Home username={username} room={room} />;
-}
+  return <Home room={room} username={username} />;
+};
+
+export default Room;

@@ -4,14 +4,23 @@ import io from "socket.io-client";
 const useSocket = (url, username, room) => {
   const socketRef = useRef(null);
 
+  const joinRoom = () => {
+    if (socketRef.current && username && room) {
+      socketRef.current.emit("joinRoom", { username, room });
+    }
+  };
+
+  const leaveRoom = () => {
+    if (socketRef.current && username && room) {
+      socketRef.current.emit("leaveRoom", { username, room });
+    }
+  };
+
   useEffect(() => {
     socketRef.current = io(url);
 
-    socketRef.current.on("connect", () => {
-      socketRef.current.emit("joinRoom", { username, room });
-    });
-
     return () => {
+      leaveRoom();
       socketRef.current.disconnect();
     };
   }, []);
@@ -34,7 +43,7 @@ const useSocket = (url, username, room) => {
     }
   }, []);
 
-  return { socket: socketRef.current, on, emit };
+  return { socket: socketRef.current, on, emit, joinRoom, leaveRoom };
 };
 
 export default useSocket;

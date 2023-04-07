@@ -72,6 +72,8 @@ public interface SocketService {
 
   void joinRoom(SocketIOClient client, Map<String, Object> payload);
 
+  void leaveRoom(SocketIOClient client, Map<String, Object> payload);
+
 
 //  void putUser(String clientId, String room);
 //

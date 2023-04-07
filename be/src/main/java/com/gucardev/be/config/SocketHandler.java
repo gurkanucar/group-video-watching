@@ -73,6 +73,12 @@ public class SocketHandler {
    socketService.joinRoom(client,payload);
   }
 
+  @OnEvent("leaveRoom")
+  public void leaveRoom(SocketIOClient client, Map<String, Object> payload)
+      throws JsonProcessingException {
+    socketService.leaveRoom(client,payload);
+  }
+
   /**
    * On video id change.
    *

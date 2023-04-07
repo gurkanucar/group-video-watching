@@ -92,6 +92,16 @@ public class SocketServiceImpl implements SocketService {
     String clientId = client.getSessionId().toString();
     client.joinRoom(room);
     users.put(clientId, room);
+    log.info("joined room: {}",room);
+  }
+
+  @Override
+  public void leaveRoom(SocketIOClient client, Map<String, Object> payload) {
+    String room = String.valueOf(payload.get("room"));
+    String clientId = client.getSessionId().toString();
+    client.leaveRoom(room);
+    users.remove(clientId);
+    log.info("leave room: {}",room);
   }
 
   public void broadcastEventToAll(SocketIOClient client, String jsonPayload, String eventName) {
