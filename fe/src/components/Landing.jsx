@@ -13,7 +13,7 @@ const Landing = () => {
     const roomName = encodeURIComponent(roomNameRef.current.value);
 
     if (roomName) {
-      const encodedRoomName = btoa(`${username}|${roomName}`);
+      const encodedRoomName = btoa(`${roomName}`);
       console.log(encodedRoomName);
       router.push(`/room?value=${encodedRoomName}`);
     }

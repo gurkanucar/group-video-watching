@@ -17,7 +17,7 @@ const VideoComponent = (props) => {
     const player = event.target;
     player.pauseVideo();
     setPlayer(player);
-    onVideoIdChange(parseUrl(videoUrl));
+    onVideoIdChange(videoUrl);
   };
 
   const options = {

@@ -3,6 +3,7 @@ import useSocket from "@/hooks/useSocket";
 import styles from "@/styles/Home.module.css";
 import { useEffect, useRef, useState } from "react";
 import VideoComponent from "./VideoComponent";
+import { parseUrl } from "@/util/videoUtils";
 
 export default function Home({ username, room }) {
   const inputRef = useRef();
@@ -12,17 +13,16 @@ export default function Home({ username, room }) {
 
   const { socket, on, emit, joinRoom, leaveRoom } = useSocket(
     `${process.env.BACKEND_URL}:${process.env.SOCKET_PORT}`,
-   //  "http://localhost:8000",
-    username,
+     //"http://localhost:8000",
     room
   );
 
   useEffect(() => {
-    if (room && username) {
+    if (room) {
       leaveRoom();
       joinRoom();
     }
-  }, [room, username]);
+  }, [room]);
 
   const handleLocalVideoIdChange = (videoId) => {
     setVideoUrl(`https://www.youtube.com/watch?v=${videoId}`);
