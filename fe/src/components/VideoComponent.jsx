@@ -2,6 +2,7 @@ import { parseUrl } from "@/util/videoUtils";
 import React from "react";
 import YouTube from "react-youtube";
 
+import styles from "@/styles/VideoComponent.module.css";
 const VideoComponent = (props) => {
   const {
     videoUrl,
@@ -31,7 +32,7 @@ const VideoComponent = (props) => {
   };
 
   return (
-    <div>
+    <div className={styles.videoContainer}>
       <YouTube
         videoId={parseUrl(videoUrl)}
         opts={options}

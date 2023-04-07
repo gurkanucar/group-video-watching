@@ -33,7 +33,7 @@ export default function Home() {
     setVideoUrl(newVideoUrl);
     const videoId = parseUrl(newVideoUrl);
     emitVideoIdChange(videoId);
-    onVideoIdChange(videoId); 
+    onVideoIdChange(videoId);
   };
 
   return (
@@ -47,8 +47,12 @@ export default function Home() {
           onPlaybackRateChange={onPlaybackRateChange}
           onVideoIdChange={onVideoIdChange}
         />
-        <input ref={inputRef} />
-        <button onClick={handleLoadVideo}>Load Video</button>
+        <div className={styles.urlInputContainer}>
+          <input ref={inputRef} className={styles.urlInput} />
+          <button onClick={handleLoadVideo} className={styles.loadButton}>
+            Load Video
+          </button>
+        </div>
       </main>
     </>
   );
