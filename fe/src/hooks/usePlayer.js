@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const usePlayer = (socket, on, emit) => {
+const usePlayer = (socket, on, emit, handleLocalVideoIdChange) => {
   const [player, setPlayer] = useState(null);
   const [lastEmittedTime, setLastEmittedTime] = useState(0);
   const [isExternalChange, setIsExternalChange] = useState(false);
@@ -37,6 +37,19 @@ const usePlayer = (socket, on, emit) => {
     emit("onPlaybackRateChange", { playbackRate: playbackRate });
   };
 
+  const onVideoIdChange = (videoId) => {
+    if (player) {
+      setIsExternalChange(true);
+      player.loadVideoById(videoId);
+      handleLocalVideoIdChange(videoId);
+      setTimeout(() => {
+        setIsExternalChange(false);
+      }, 200);
+    }
+  };
+  const emitVideoIdChange = (videoId) => {
+    emit("videoIdChange", { videoId });
+  };
   useEffect(() => {
     if (socket) {
       on("handleSeekChange", (data) => {
@@ -66,6 +79,12 @@ const usePlayer = (socket, on, emit) => {
           }, 200);
         }
       });
+      on("handleVideoIdChange", (data) => {
+        const parsedData = JSON.parse(data);
+        if (player && player.getIframe()) {
+          onVideoIdChange(parsedData.videoId);
+        }
+      });
     }
     return () => {
       if (socket) {
@@ -82,6 +101,8 @@ const usePlayer = (socket, on, emit) => {
     setLastEmittedTime,
     onPlayerStateChange,
     onPlaybackRateChange,
+    onVideoIdChange,
+    emitVideoIdChange,
   };
 };
 
