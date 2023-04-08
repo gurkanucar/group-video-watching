@@ -54,22 +54,6 @@ public class SocketServiceImpl implements SocketService {
 
     String jsonPayload = new ObjectMapper().writeValueAsString(response);
 
-    // Choose the appropriate event name based on the eventType property
-    String eventName;
-    switch (payload.get("eventType").toString()) {
-      case "stateChange":
-        eventName = "handlePlayerStateChange";
-        break;
-      case "playbackRateChange":
-        eventName = "handlePlaybackRateChange";
-        break;
-      case "videoIdChange":
-        eventName = "handleVideoIdChange";
-        break;
-      default:
-        log.warn("Unknown eventType: {}", payload.get("eventType"));
-        return;
-    }
     broadcastEvent(client, jsonPayload, "handlePlayerChange");
   }
 

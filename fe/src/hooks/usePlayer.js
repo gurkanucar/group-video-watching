@@ -59,50 +59,55 @@ const usePlayer = (socket, on, emit, handleLocalVideoIdChange) => {
       handlePlayerChange({ target: player }, "videoIdChange");
     }
   };
+  const syncPlayer = (parsedData) => {
+    setIsExternalChange(true);
+
+    // Sync video ID
+    const videoData = player.getVideoData();
+    if (videoData && parsedData.videoId !== videoData.video_id) {
+      onVideoIdChange(parsedData.videoId);
+    }
+
+    // Sync player state
+    if (parsedData.playerState === 1) {
+      player.playVideo();
+    } else if (parsedData.playerState === 2) {
+      player.pauseVideo();
+    }
+
+    // Sync current time
+    if (Math.abs(player.getCurrentTime() - parsedData.currentTime) >= 1) {
+      player.seekTo(parsedData.currentTime, true);
+    }
+
+    // Sync playback rate
+    player.setPlaybackRate(parsedData.playbackRate);
+
+    setTimeout(() => {
+      setIsExternalChange(false);
+    }, 200);
+  };
+
   useEffect(() => {
     if (socket) {
       on("handlePlayerChange", (data) => {
         const parsedData = JSON.parse(data);
         if (player && player.getIframe()) {
-          setIsExternalChange(true);
+          syncPlayer(parsedData);
+        }
+      });
 
-          if (
-            parsedData.eventType === "stateChange" &&
-            Math.abs(player.getCurrentTime() - parsedData.currentTime) >= 1
-          ) {
-            console.log("seek update");
-            player.seekTo(parsedData.currentTime, true);
-          }
-          // Handle playback rate change
-          if (parsedData.eventType === "playbackRateChange") {
-            console.log("playbackRate update");
-            player.setPlaybackRate(parsedData.playbackRate);
-          }
-          // Handle player state change
-          if (parsedData.eventType === "stateChange") {
-            console.log("playerState update");
-            if (parsedData.playerState === 1) {
-              player.playVideo();
-            } else if (parsedData.playerState === 2) {
-              player.pauseVideo();
-            }
-          }
-          // Handle video ID change
-          const videoData = player.getVideoData();
-          if (videoData && parsedData.videoId !== videoData.video_id) {
-            console.log("videoId update");
-            onVideoIdChange(parsedData.videoId);
-          }
-
-          setTimeout(() => {
-            setIsExternalChange(false);
-          }, 200);
+      on("handleSync", (data) => {
+        const parsedData = JSON.parse(data);
+        if (player && player.getIframe()) {
+          syncPlayer(parsedData);
         }
       });
     }
     return () => {
       if (socket) {
         socket.off("handlePlayerChange");
+        socket.off("handleSync");
       }
     };
   }, [socket, player, on]);
