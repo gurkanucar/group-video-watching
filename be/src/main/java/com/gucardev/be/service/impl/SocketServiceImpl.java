@@ -44,12 +44,39 @@ public class SocketServiceImpl implements SocketService {
   public void onPlayerStateChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
 
-    log.info("playerStateChange ,client: {}, payload: {}", client.getSessionId(), payload);
+
+    log.info("playerChange, client: {}, payload: {}", client.getSessionId(), payload);
     Map<String, Object> response = new HashMap<>();
+    response.put("eventType", payload.get("eventType"));
     response.put("playerState", payload.get("playerState"));
+    response.put("currentTime", payload.get("currentTime"));
+    response.put("playbackRate", payload.get("playbackRate"));
+    response.put("videoId", payload.get("videoId"));
+
     String jsonPayload = new ObjectMapper().writeValueAsString(response);
-    broadcastEvent(client, jsonPayload, "handlePlayerStateChange");
+
+    // Choose the appropriate event name based on the eventType property
+    String eventName;
+    switch (payload.get("eventType").toString()) {
+      case "stateChange":
+        eventName = "handlePlayerStateChange";
+        break;
+      case "playbackRateChange":
+        eventName = "handlePlaybackRateChange";
+        break;
+      case "videoIdChange":
+        eventName = "handleVideoIdChange";
+        break;
+      default:
+        log.warn("Unknown eventType: {}", payload.get("eventType"));
+        return;
+    }
+    broadcastEvent(client, jsonPayload, "handlePlayerChange");
   }
+
+
+
+
 
   @Override
   public void onSeekChange(SocketIOClient client, Map<String, Object> payload)

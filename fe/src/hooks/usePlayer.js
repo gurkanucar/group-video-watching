@@ -2,39 +2,44 @@ import { useEffect, useState } from "react";
 
 const usePlayer = (socket, on, emit, handleLocalVideoIdChange) => {
   const [player, setPlayer] = useState(null);
-  const [lastEmittedTime, setLastEmittedTime] = useState(0);
   const [isExternalChange, setIsExternalChange] = useState(false);
 
-  const onPlayerStateChange = (event) => {
+  const handlePlayerChange = (event, eventType) => {
     if (isExternalChange) {
       setIsExternalChange(false);
       return;
     }
     const player = event.target;
-    console.log("myplayer", player);
-    const playerState = player.getPlayerState();
 
-    if (playerState === 1) {
-      const currentTime = player.getCurrentTime();
-      if (Math.abs(currentTime - lastEmittedTime) >= 1) {
-        setLastEmittedTime(currentTime);
-        emit("seekChange", { currentTime });
-      }
-      emit("playerStateChange", { playerState: "play" });
-    } else if (playerState === 2) {
-      emit("playerStateChange", { playerState: "pause" });
+    const playerState = player.getPlayerState();
+    const currentTime = player.getCurrentTime();
+    const playbackRate = player.getPlaybackRate();
+    const videoData = player.getVideoData();
+    console.log(player.getVideoData());
+    const videoId = videoData?.video_id;
+    if (!videoId) {
+      return;
     }
+
+    emit("playerChange", {
+      eventType: eventType,
+      playerState: playerState,
+      currentTime: currentTime,
+      playbackRate: playbackRate,
+      videoId: videoId,
+    });
+  };
+
+  const onPlayerStateChange = (event) => {
+    // If the player state is unstarted (-1), do not emit the event.
+    if (event.data === -1) {
+      return;
+    }
+    handlePlayerChange(event, "stateChange");
   };
 
   const onPlaybackRateChange = (event) => {
-    if (isExternalChange) {
-      setIsExternalChange(false);
-      return;
-    }
-    const player = event.target;
-    console.log("playbackRate", player.getPlaybackRate());
-    const playbackRate = player.getPlaybackRate();
-    emit("onPlaybackRateChange", { playbackRate: playbackRate });
+    handlePlayerChange(event, "playbackRateChange");
   };
 
   const onVideoIdChange = (videoId) => {
@@ -42,54 +47,62 @@ const usePlayer = (socket, on, emit, handleLocalVideoIdChange) => {
       setIsExternalChange(true);
       player.loadVideoById(videoId);
       handleLocalVideoIdChange(videoId);
+      handlePlayerChange({ target: player }, "videoIdChange");
       setTimeout(() => {
         setIsExternalChange(false);
       }, 200);
     }
   };
+
   const emitVideoIdChange = (videoId) => {
-    emit("videoIdChange", { videoId });
+    if (player) {
+      handlePlayerChange({ target: player }, "videoIdChange");
+    }
   };
   useEffect(() => {
     if (socket) {
-      on("handleSeekChange", (data) => {
-        const parsedData = JSON.parse(data);
-        if (player && player.getIframe()) {
-          player.seekTo(parsedData.seekTo, true);
-        }
-      });
-      on("handlePlaybackRateChange", (data) => {
-        const parsedData = JSON.parse(data);
-        console.log("handlePlaybackRateChange", parsedData.playbackRate);
-        if (player && player.getIframe()) {
-          player.setPlaybackRate(parsedData.playbackRate);
-        }
-      });
-      on("handlePlayerStateChange", (data) => {
+      on("handlePlayerChange", (data) => {
         const parsedData = JSON.parse(data);
         if (player && player.getIframe()) {
           setIsExternalChange(true);
-          if (parsedData.playerState === "play") {
-            player.playVideo();
-          } else if (parsedData.playerState === "pause") {
-            player.pauseVideo();
+
+          if (
+            parsedData.eventType === "stateChange" &&
+            Math.abs(player.getCurrentTime() - parsedData.currentTime) >= 1
+          ) {
+            console.log("seek update");
+            player.seekTo(parsedData.currentTime, true);
           }
+          // Handle playback rate change
+          if (parsedData.eventType === "playbackRateChange") {
+            console.log("playbackRate update");
+            player.setPlaybackRate(parsedData.playbackRate);
+          }
+          // Handle player state change
+          if (parsedData.eventType === "stateChange") {
+            console.log("playerState update");
+            if (parsedData.playerState === 1) {
+              player.playVideo();
+            } else if (parsedData.playerState === 2) {
+              player.pauseVideo();
+            }
+          }
+          // Handle video ID change
+          const videoData = player.getVideoData();
+          if (videoData && parsedData.videoId !== videoData.video_id) {
+            console.log("videoId update");
+            onVideoIdChange(parsedData.videoId);
+          }
+
           setTimeout(() => {
             setIsExternalChange(false);
           }, 200);
         }
       });
-      on("handleVideoIdChange", (data) => {
-        const parsedData = JSON.parse(data);
-        if (player && player.getIframe()) {
-          onVideoIdChange(parsedData.videoId);
-        }
-      });
     }
     return () => {
       if (socket) {
-        socket.off("seekChange");
-        socket.off("handlePlayerStateChange");
+        socket.off("handlePlayerChange");
       }
     };
   }, [socket, player, on]);
@@ -97,8 +110,6 @@ const usePlayer = (socket, on, emit, handleLocalVideoIdChange) => {
   return {
     player,
     setPlayer,
-    lastEmittedTime,
-    setLastEmittedTime,
     onPlayerStateChange,
     onPlaybackRateChange,
     onVideoIdChange,

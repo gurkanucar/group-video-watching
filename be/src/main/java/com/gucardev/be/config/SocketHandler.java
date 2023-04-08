@@ -126,7 +126,7 @@ public class SocketHandler {
    * @param payload the payload
    * @throws JsonProcessingException the json processing exception
    */
-  @OnEvent("playerStateChange")
+  @OnEvent("playerChange")
   public void onPlayerStateChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
     socketService.onPlayerStateChange(client, payload);

@@ -3,6 +3,7 @@ import React from "react";
 import YouTube from "react-youtube";
 
 import styles from "@/styles/VideoComponent.module.css";
+
 const VideoComponent = (props) => {
   const {
     videoUrl,
@@ -17,7 +18,7 @@ const VideoComponent = (props) => {
     const player = event.target;
     player.pauseVideo();
     setPlayer(player);
-    onVideoIdChange(videoUrl);
+    onVideoIdChange(parseUrl(videoUrl));
   };
 
   const options = {
