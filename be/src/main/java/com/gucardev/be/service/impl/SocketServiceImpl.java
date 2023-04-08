@@ -44,7 +44,6 @@ public class SocketServiceImpl implements SocketService {
   public void onPlayerStateChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
 
-
     log.info("playerChange, client: {}, payload: {}", client.getSessionId(), payload);
     Map<String, Object> response = new HashMap<>();
     response.put("eventType", payload.get("eventType"));
@@ -74,52 +73,13 @@ public class SocketServiceImpl implements SocketService {
     broadcastEvent(client, jsonPayload, "handlePlayerChange");
   }
 
-
-
-
-
-  @Override
-  public void onSeekChange(SocketIOClient client, Map<String, Object> payload)
-      throws JsonProcessingException {
-
-    log.info("playerStateChange ,client: {}, payload: {}", client.getSessionId(), payload);
-    Map<String, Object> response = new HashMap<>();
-    response.put("seekTo", payload.get("currentTime"));
-    String jsonPayload = new ObjectMapper().writeValueAsString(response);
-    broadcastEvent(client, jsonPayload, "handleSeekChange");
-  }
-
-  @Override
-  public void onVideoIdChange(SocketIOClient client, Map<String, Object> payload)
-      throws JsonProcessingException {
-
-    log.info("videoIdChange ,client: {}, payload: {}", client.getSessionId(), payload);
-    Map<String, Object> response = new HashMap<>();
-    response.put("videoId", payload.get("videoId"));
-    String jsonPayload = new ObjectMapper().writeValueAsString(response);
-
-    broadcastEvent(client, jsonPayload, "handleVideoIdChange");
-  }
-
-  @Override
-  public void onPlaybackRateChange(SocketIOClient client, Map<String, Object> payload)
-      throws JsonProcessingException {
-
-    log.info("onPlaybackRateChange ,client: {}, payload: {}", client.getSessionId(), payload);
-    Map<String, Object> response = new HashMap<>();
-    response.put("playbackRate", payload.get("playbackRate"));
-    String jsonPayload = new ObjectMapper().writeValueAsString(response);
-
-    broadcastEvent(client, jsonPayload, "handlePlaybackRateChange");
-  }
-
   @Override
   public void joinRoom(SocketIOClient client, Map<String, Object> payload) {
     String room = String.valueOf(payload.get("room"));
     String clientId = client.getSessionId().toString();
     client.joinRoom(room);
     users.put(clientId, room);
-    log.info("joined room: {}",room);
+    log.info("joined room: {}", room);
   }
 
   @Override
@@ -128,7 +88,7 @@ public class SocketServiceImpl implements SocketService {
     String clientId = client.getSessionId().toString();
     client.leaveRoom(room);
     users.remove(clientId);
-    log.info("leave room: {}",room);
+    log.info("leave room: {}", room);
   }
 
   /**

@@ -40,35 +40,6 @@ public interface SocketService {
   void onPlayerStateChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException;
 
-  /**
-   * On seek change.
-   *
-   * @param client the client
-   * @param payload the payload
-   * @throws JsonProcessingException the json processing exception
-   */
-  void onSeekChange(SocketIOClient client, Map<String, Object> payload)
-      throws JsonProcessingException;
-
-  /**
-   * On video id change.
-   *
-   * @param client the client
-   * @param payload the payload
-   * @throws JsonProcessingException the json processing exception
-   */
-  void onVideoIdChange(SocketIOClient client, Map<String, Object> payload)
-      throws JsonProcessingException;
-
-  /**
-   * On playback rate change.
-   *
-   * @param client the client
-   * @param payload the payload
-   * @throws JsonProcessingException the json processing exception
-   */
-  void onPlaybackRateChange(SocketIOClient client, Map<String, Object> payload)
-      throws JsonProcessingException;
 
   /**
    * Join room.

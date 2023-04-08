@@ -8,7 +8,6 @@ import com.corundumstudio.socketio.annotation.OnEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gucardev.be.service.SocketService;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -77,7 +76,7 @@ public class SocketHandler {
   @OnEvent("joinRoom")
   public void joinRoom(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
-   socketService.joinRoom(client,payload);
+    socketService.joinRoom(client, payload);
   }
 
   /**
@@ -90,33 +89,7 @@ public class SocketHandler {
   @OnEvent("leaveRoom")
   public void leaveRoom(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
-    socketService.leaveRoom(client,payload);
-  }
-
-  /**
-   * On video id change.
-   *
-   * @param client the client
-   * @param payload the payload
-   * @throws JsonProcessingException the json processing exception
-   */
-  @OnEvent("videoIdChange")
-  public void onVideoIdChange(SocketIOClient client, Map<String, Object> payload)
-      throws JsonProcessingException {
-    socketService.onVideoIdChange(client, payload);
-  }
-
-  /**
-   * On seek change.
-   *
-   * @param client the client
-   * @param payload the payload
-   * @throws JsonProcessingException the json processing exception
-   */
-  @OnEvent("seekChange")
-  public void onSeekChange(SocketIOClient client, Map<String, Object> payload)
-      throws JsonProcessingException {
-    socketService.onSeekChange(client, payload);
+    socketService.leaveRoom(client, payload);
   }
 
   /**
@@ -130,18 +103,5 @@ public class SocketHandler {
   public void onPlayerStateChange(SocketIOClient client, Map<String, Object> payload)
       throws JsonProcessingException {
     socketService.onPlayerStateChange(client, payload);
-  }
-
-  /**
-   * On playback rate change.
-   *
-   * @param client the client
-   * @param payload the payload
-   * @throws JsonProcessingException the json processing exception
-   */
-  @OnEvent("onPlaybackRateChange")
-  public void onPlaybackRateChange(SocketIOClient client, Map<String, Object> payload)
-      throws JsonProcessingException {
-    socketService.onPlaybackRateChange(client, payload);
   }
 }
