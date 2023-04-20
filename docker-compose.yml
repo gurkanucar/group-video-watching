@@ -9,7 +9,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     networks:
-      - shared-net
+      video-watch:
+        ipv4_address: 172.20.0.2
     ports:
       - '8000:8000'
 
@@ -28,8 +29,12 @@ services:
       BACKEND_PORT: ${BACKEND_PORT}
       SOCKET_PORT: ${SOCKET_PORT}
     networks:
-      - shared-net
+      video-watch:
+        ipv4_address: 172.20.0.3
 
 networks:
-  shared-net:
+  video-watch:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
